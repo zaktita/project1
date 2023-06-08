@@ -1,0 +1,39 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+aside{
+    height: 100vh;
+    width: 200px;
+    background-color: #635985;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.links{
+    color: white;
+    text-decoration: none;
+    text-transform: capitalize;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: start;
+}
+
+.links:hover{
+    background-color: #443C68;
+}
+
+.contentContainer{
+    display: flex;
+}
+main{
+    width: 100%;
+}
+header{
+    background-color: #18122B;
+    color: white;
+}
+
