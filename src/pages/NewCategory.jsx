@@ -1,8 +1,8 @@
 import React from "react";
 import axios from "axios";
-import { Button, Form, Input } from "antd";
+import { Alert, Button, Form, Input,message ,Space} from "antd";
 import { useState } from "react";
-import ImageUploader from "../Component/ImageUploader";
+// import ImageUploader from "../Component/ImageUploader";
 import { SmileOutlined } from '@ant-design/icons';
 const { TextArea } = Input;
 
@@ -10,26 +10,31 @@ function NewCategory() {
   const [categoryName, setCategoryName] = useState("");
   const [categorySlug, setCategorySlug] = useState("");
   const [categoryDescription, setCategoryDescription] = useState("");
-  const [image, setImage] = useState("");
-
+  const [CategoryImage, setCategoryImage] = useState([]);
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const handleImageUpload = (event) => {
     console.log(event.target.files[0]);
-    setImage(event.target.files[0]);
+    console.log('image uploaded');
+    setCategoryImage(event.target.files[0]);
   };
 
 
-  
+  const [messageApi, contextHolder] = message.useMessage();
+
+ 
 
 
   const handleSubmit = (event) => {
-    console.log('form submit working');
-    // event.preventDefault();
+    console.log('form submit working');  
 
     const formData = new FormData();
     formData.append("category_name", categoryName);
     formData.append("category_slug", categorySlug);
     formData.append("category_description", categoryDescription);
-    formData.append("image", image);
+    formData.append("category_image", CategoryImage);
+
+  
+
 
     const config = {
       headers: {
@@ -44,11 +49,14 @@ function NewCategory() {
       .then((response) => {
         console.log(response.data);
         // Handle success, e.g., show a success message
+        message.success('Category created successfully');
       })
       .catch((error) => {
         console.log(error.response.data); 
+        message.error('Error creating category');
         // Handle error, e.g., show an error message
       });
+  
   };
   return (
     <Form
@@ -113,10 +121,12 @@ function NewCategory() {
               Category image
             </label>
 
-            {/* <ImageUploader uploadLimit="1" id="image" handleImageUpload={handleImageUpload} /> */}
-            <input type="file" name="image" id="image" onChange={handleImageUpload} />
+
+            <input type="file" multiple name="category-image" id="category-image" onChange={handleImageUpload} />
 
             <Button type="primary" htmlType="submit" className="w-50">Add Category</Button>
+
+            {contextHolder}
           </div>
         </div>
       </div>
