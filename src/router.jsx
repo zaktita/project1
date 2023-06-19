@@ -72,10 +72,10 @@ const router = createBrowserRouter([
                 path:'/colors',
                 element:<AddColor/>
             },
-            {
-                path:'/ProductForm',
-                element:<ProductForm/>
-            },
+            // {
+            //     path:'/ProductForm',
+            //     element:<ProductForm/>
+            // },
         ]
     },
     {

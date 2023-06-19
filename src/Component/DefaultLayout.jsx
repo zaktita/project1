@@ -25,7 +25,7 @@ const items = [
     getItem('Product list', 'ProductList',<CaretDownOutlined />),
     getItem('Add Product ', 'Addproduct',<PlusOutlined />),
     getItem('colors', 'colors', <BgColorsOutlined /> ),
-    getItem('ProductForm', 'ProductForm', <BgColorsOutlined /> ),
+    // getItem('ProductForm', 'ProductForm', <BgColorsOutlined /> ),
     getItem('sizes', 'sizes', <SkinOutlined /> ),
   ]),
   getItem('Category', 'Category', <UserOutlined />, [

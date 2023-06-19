@@ -97,6 +97,7 @@ const [colorOptions, setColorOptions] = useState([]);
 const [selectedColors, setSelectedColors] = useState([]);
 
 const [sizes, setSizes] = useState([]);
+const [price, setPrice] = useState(100);
 const [sizeOptions, setSizeOptions] = useState([]);
 const [selectedSizes, setSelectedSizes] = useState([]);
 
@@ -145,6 +146,10 @@ console.log(selectedColors);
 const handleSizeChange = (selectedValues) => {
   setSelectedSizes(selectedValues);
 };
+const handlePriceChange = (selectedValues) => {
+  setPrice(selectedValues);
+};
+
 
 // post data to the server 
 
@@ -153,29 +158,31 @@ const [messageApi, contextHolder] = message.useMessage();
 
   const handleSubmit = async () => {
     const formData = new FormData();
-    // const form = document.querySelector("form");
     const productTitle = formData.get("title");
     const productSlug = formData.get("slug");
     const productDescription = formData.get("description");
     const productCategories = selectedCategories;
-    const productColors = selectedColors;
+    const productColors = selectedColors[0];
+    // const productColors = JSON.stringify(selectedColors);
     const productSizes = selectedSizes;
     const productQuantity = formData.get("quantity");
-    const productPrices = formData.get("price");
+    const productPrices = price;
     const mainImage = formData.get("imageMain");
     const ProductImages = formData.getAll("ProductImages");
     try {
       await form.validateFields();
       console.log('form submit working');
+      console.log(productQuantity);
+      
 
       formData.append("title", productTitle);
       formData.append("slug", productSlug);
       formData.append("description", productDescription);
       formData.append("category_id", productCategories);
-      formData.append("Colors", productColors);
-      formData.append("Sizes", productSizes);
-      formData.append("Quantity", productQuantity);
-      formData.append("Prices", productPrices);
+      formData.append("colors", productColors);
+      formData.append("sizes", productSizes);
+      formData.append("quantity", productQuantity);
+      formData.append("price", productPrices);
       formData.append("image", mainImage);
 
       const config = {
@@ -318,11 +325,38 @@ const [messageApi, contextHolder] = message.useMessage();
       <label htmlFor="quantity" className="fw-bold">
         Product quantity
       </label>
-      <InputNumber size="large" name="quantity" placeholder="Product quantity" addonBefore="+"  defaultValue={100} />
+      <Form.Item
+    name="quantity"
+    label="Product quantity"
+    // initialValue={100}
+    rules={[
+      {
+        required: true,
+        type: 'number',
+        message: 'Please enter the product price',
+      },
+    ]}
+  >
+      <InputNumber size="large"  placeholder="Product quantity" addonBefore="+"  />
+      </Form.Item>
       <label htmlFor="price" className="fw-bold">
         Product Price
       </label>
-      <InputNumber size="large" name="price" placeholder="Product price" addonBefore="+" addonAfter="$" defaultValue={100} />
+      <Form.Item
+    name="price"
+    label="Product price"
+    initialValue={100}
+    rules={[
+      {
+        required: true,
+        type: 'number',
+        message: 'Please enter the product price',
+      },
+    ]}
+  >
+    <InputNumber size="large" placeholder="Product price" addonBefore="+" addonAfter="$"  onChange={handlePriceChange}/>
+  </Form.Item>
+      {/* <InputNumber size="large" name="price" placeholder="Product price" addonBefore="+" addonAfter="$" defaultValue={100} /> */}
       {contextHolder}
             </div>
           </div>
