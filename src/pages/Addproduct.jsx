@@ -1,184 +1,336 @@
-import React from "react";
-import { PlusOutlined, InboxOutlined } from "@ant-design/icons";
-import {
-  Button,
-  Divider,
-  Form,
-  Input,
-  InputNumber,
-  Select,
-  Space,
-  Tag,
-} from "antd";
-import { useRef, useState } from "react";
+// AddProduct.js
+import React, { useEffect, useState } from "react";
+import { Input, Tag,Form, Select, Button,InputNumber,message } from "antd";
+import axios from "axios";
 
-import { message, Upload } from "antd";
-import ImageUploader from "../Component/ImageUploader";
-import FormItemLabel from "antd/es/form/FormItemLabel";
-const { Dragger } = Upload;
 
-const { Option } = Select;
-let index = 0;
+// import ProductInformation from "./ProductInformation";
+// import ProductDetails from "./ProductDetails";
+
 const { TextArea } = Input;
+const { Option } = Select;
 
-const options = [
-  {
-    value: "gold",
-  },
-  {
-    value: "lime",
-  },
-  {
-    value: "green",
-  },
-  {
-    value: "cyan",
-  },
-];
-const tagRender = (props) => {
-  const { label, value, closable, onClose } = props;
-  const onPreventMouseDown = (event) => {
-    event.preventDefault();
-    event.stopPropagation();
+function AddProduct() {
+
+
+
+  const [categories, setCategories] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [productImages, setProductImages] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
+  const [mainImage, setMainImage] = useState(null);
+  const [mainImagePreview, setMainImagePreview] = useState(null);
+  const [form] = Form.useForm();
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  useEffect(() => {
+    fetchCategoriesFromServer();
+  }, []);
+
+  const handleImageUpload = (event) => {
+    const files = event.target.files;
+    const uploadedImages = Array.from(files);
+    setProductImages((prevImages) => [...prevImages, ...uploadedImages]);
+
+    const previews = uploadedImages.map((image) => URL.createObjectURL(image));
+    setImagePreviews((prevPreviews) => [...prevPreviews, ...previews]);
   };
-  return (
-    <Tag
-      color={value}
-      onMouseDown={onPreventMouseDown}
-      closable={closable}
-      onClose={onClose}
-      style={{
-        alignItems: "center",
-      }}
-    >
-      {label}
-    </Tag>
-  );
+
+
+
+  const handleDeleteImage = (index) => {
+    const updatedImages = [...productImages];
+    updatedImages.splice(index, 1);
+    setProductImages(updatedImages);
+  
+    const updatedPreviews = [...imagePreviews];
+    updatedPreviews.splice(index, 1);
+    setImagePreviews(updatedPreviews);
+  };
+
+  const handleMainImageUpload = (event) => {
+    const file = event.target.files[0];
+    setMainImage(file);
+
+    const preview = URL.createObjectURL(file);
+    setMainImagePreview(preview);
+  };
+
+  const deleteMainImage = () => {
+    setMainImage(null);
+    setMainImagePreview(null);
+  };
+
+  const fetchCategoriesFromServer = async () => {
+    try {
+      const response = await axios.get("http://127.0.0.1:8000/api/category");
+      setCategories(response.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleCategoryChange = (selectedValues) => {
+    setSelectedCategories(selectedValues);
+    console.log(selectedCategories);
+  };
+
+  const tagRender = (props) => {
+    const { label, value, closable, onClose } = props;
+
+    const onPreventMouseDown = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+    };
+
+    return (
+      <Tag color="blue" onMouseDown={onPreventMouseDown} closable={closable} onClose={onClose}>
+        {label}
+      </Tag>
+    );
+  };
+
+
+
+// product details
+const [colors, setColors] = useState([]);
+const [colorOptions, setColorOptions] = useState([]);
+const [selectedColors, setSelectedColors] = useState([]);
+
+const [sizes, setSizes] = useState([]);
+const [sizeOptions, setSizeOptions] = useState([]);
+const [selectedSizes, setSelectedSizes] = useState([]);
+
+useEffect(() => {
+  fetchColorsFromServer();
+  fetchSizesFromServer();
+}, []);
+
+const fetchColorsFromServer = async () => {
+  try {
+    const response = await axios.get("http://127.0.0.1:8000/api/colors");
+    setColors(response.data.data);
+
+    const colorOptions = response.data.data.map((e) => {
+      return { value: e.id, label: e.color_name };
+    });
+
+    setColorOptions(colorOptions);
+    console.log(colorOptions);
+  } catch (error) {
+    console.log(error);
+  }
 };
 
-const props = {
-  name: "file",
-  multiple: true,
-  action: "https://www.mocky.io/v2/5cc8019d300000980a055e76",
-  onChange(info) {
-    const { status } = info.file;
-    if (status !== "uploading") {
-      console.log(info.file, info.fileList);
-    }
-    if (status === "done") {
-      message.success(`${info.file.name} file uploaded successfully.`);
-    } else if (status === "error") {
-      message.error(`${info.file.name} file upload failed.`);
-    }
-  },
-  onDrop(e) {
-    console.log("Dropped files", e.dataTransfer.files);
-  },
+const fetchSizesFromServer = async () => {
+  try {
+    const response = await axios.get("http://127.0.0.1:8000/api/sizes");
+    setSizes(response.data.size);
+
+    const sizeOptions = response.data.size.map((e) => {
+      return { value: e.id, label: e.size };
+    });
+
+    setSizeOptions(sizeOptions);
+  } catch (error) {
+    console.log(error);
+  }
 };
-function Addproduct() {
-  const [items, setItems] = useState(["jack", "lucy"]);
-  const [name, setName] = useState("");
-  const inputRef = useRef(null);
-  const onNameChange = (event) => {
-    setName(event.target.value);
+
+const handleColorChange = (selectedValues) => {
+  setSelectedColors(selectedValues);
+  console.log(selectedValues);
+console.log(selectedColors);
+};
+
+const handleSizeChange = (selectedValues) => {
+  setSelectedSizes(selectedValues);
+};
+
+// post data to the server 
+
+
+const [messageApi, contextHolder] = message.useMessage();
+
+  const handleSubmit = async () => {
+    const formData = new FormData();
+    // const form = document.querySelector("form");
+    const productTitle = formData.get("title");
+    const productSlug = formData.get("slug");
+    const productDescription = formData.get("description");
+    const productCategories = selectedCategories;
+    const productColors = selectedColors;
+    const productSizes = selectedSizes;
+    const productQuantity = formData.get("quantity");
+    const productPrices = formData.get("price");
+    const mainImage = formData.get("imageMain");
+    const ProductImages = formData.getAll("ProductImages");
+    try {
+      await form.validateFields();
+      console.log('form submit working');
+
+      formData.append("title", productTitle);
+      formData.append("slug", productSlug);
+      formData.append("description", productDescription);
+      formData.append("category_id", productCategories);
+      formData.append("Colors", productColors);
+      formData.append("Sizes", productSizes);
+      formData.append("Quantity", productQuantity);
+      formData.append("Prices", productPrices);
+      formData.append("image", mainImage);
+
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Accept: "application/json",
+        },
+      };
+
+      const response = await axios.post("http://127.0.0.1:8000/api/products", formData, { headers: config.headers });
+      console.log(response.data);
+      message.success('Product created successfully');
+      form.resetFields(); // Clear form fields
+      setIsSubmitted(true); // Set isSubmitted to true
+    } catch (error) {
+      console.log(error.response.data);
+      message.error('Error creating category');
+    }
   };
-  const addItem = (e) => {
-    e.preventDefault();
-    setItems([...items, name || `New item ${index++}`]);
-    setName("");
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 0);
-  };
+
+
+
   return (
-    <Form
-      layout="horizontal"
-      className="d-flex align-items-start bg-white p-5 w-100 "
-    >
-      {/* product information */}
+    <Form form={form}
+    onFinish={handleSubmit}
+     layout="horizontal" 
+     className="d-flex align-items-start bg-white p-5 w-100">
       <div className="container">
         <h3 className="mb-4">Add New Product</h3>
         <div className="row">
           <div className="d-flex gap-3 col">
             <div className="d-flex flex-column gap-3 w-50">
-              <label htmlFor="title" className="fw-bold">Product Title</label>
-              <Input
-                placeholder="Product title"
-                name="title"
-                status="error"
-                size="large"
-              />
-              <label htmlFor="description" className="fw-bold">Product Description</label>
+              {/* <ProductInformation /> */}
 
-              <TextArea
-                size="large"
-                rows={3}
-                placeholder="Product description"
-                maxLength={6}
-              />
+      <label htmlFor="title" className="fw-bold">
+        Product Title
+      </label>
+      <Input placeholder="Product title" name="title" size="large" />
+      <label htmlFor="slug" className="fw-bold">
+        Product slug
+      </label>
+      <Input placeholder="Product slug" name="slug" size="large" />
 
-              {/* category selection */}
-              <label htmlFor="categories" className="fw-bold">Product Categories</label>
+      <label htmlFor="description" className="fw-bold">
+        Product Description
+      </label>
+      <TextArea size="large" rows={3} name="description" placeholder="Product description" maxLength={6} />
+      <label htmlFor="categories" className="fw-bold">
+        Product Categories
+      </label>
+      <Select
+        size="large"
+        mode="multiple"
+        showArrow
+        name="categories"
+        tagRender={tagRender}
+        style={{ width: "100%" }}
+        value={selectedCategories}
+        onChange={handleCategoryChange}
+      >
+        {categories.map((category) => (
+          <Option key={category.category_id} value={category.id}>
+            {category.category_name}
+          </Option>
+        ))}
+      </Select>
+      <label htmlFor="imageMain" className="fw-bold">
+        Product Main Image
+      </label>
+      <input type="file" name="imageMain" id="imageMain" onChange={handleMainImageUpload} />
+      {mainImagePreview && (
+        <div>
+          <img src={mainImagePreview} alt="Product Main" style={{ width: "100px", height: "100px" }} />
+          <Button type="primary" size="small" shape="circle" onClick={deleteMainImage}>
+            X
+          </Button>
+        </div>
+      )}
+      <label htmlFor="ProductImages" className="fw-bold">
+        Product Images
+      </label>
+      <input type="file" multiple name="ProductImages" id="ProductImages" onChange={handleImageUpload} />
 
-              <Select
-                size="large"
-                mode="multiple"
-                showArrow
-                tagRender={tagRender}
-                defaultValue={["gold", "cyan"]}
-                style={{
-                  width: "100%",
-                }}
-                options={options}
-              />
-              {/* image uplod */}
-              <label htmlFor="images" className="fw-bold">Product images</label>
-
-              <ImageUploader uploadLimit="8" />
-              <Button type="primary w-50">Add Product</Button>
+      <div className="mt-2 d-flex flex-wrap gap-3">
+        {imagePreviews.map((preview, index) => (
+          <div key={index} style={{ position: "relative" }}>
+            <img src={preview} alt={`Product Image ${index + 1}`} style={{ width: "100px", height: "100px" }} />
+            <Button
+              type="primary"
+              size="small"
+              shape="circle"
+              style={{ position: "absolute", top: "-8px", right: "-8px" }}
+              onClick={() => handleDeleteImage(index)}
+            >
+              X
+            </Button>
+          </div>
+        ))}
+      </div>
+    
+              <Button type="primary" 
+              // onClick={handleAddProduct} 
+              htmlType="submit" className="w-50">
+                Add Product
+              </Button>
             </div>
-
             <div className="d-flex flex-column gap-3 w-50 col">
-            <label htmlFor="slug" className="fw-bold">Product slug</label>
+              {/* <ProductDetails /> */}
+              <label htmlFor="colors" className="fw-bold">
+        Product Colors
+      </label>
+      <Select
+        size="large"
+        mode="multiple"
+        name="colors"
+        showArrow
+        tagRender={tagRender}
+        defaultValue={[]}
+        style={{ width: "100%" }}
+        options={colorOptions}
+        onChange={handleColorChange}
+      />
 
-              <Input
-                addonBefore="skyzoo.ma/"
-                placeholder="product-name"
-                size="large"
-              />
-              <label htmlFor="quantity" className="fw-bold">Product Quantity</label>
-              <Input placeholder="Stock quantity" size="large" />
+      <label htmlFor="sizes" className="fw-bold">
+        Product Sizes
+      </label>
+      <Select
+        size="large"
+        mode="multiple"
+        name="sizes"
+        showArrow
+        tagRender={tagRender}
+        defaultValue={[]}
+        style={{ width: "100%" }}
+        value={selectedSizes}
+        options={sizeOptions}
+        onChange={handleSizeChange}
+      />
 
-              <label htmlFor="code" className="fw-bold">Product Code</label>
-              <Input placeholder="SKU" size="large" />
-
-              <label htmlFor="colors" className="fw-bold">Product Colors</label>
-              <Select
-                size="large"
-                mode="multiple"
-                showArrow
-                tagRender={tagRender}
-                defaultValue={["gold", "cyan"]}
-                style={{
-                  width: "100%",
-                }}
-                options={options}
-              />
-              <label htmlFor="price" className="fw-bold">Product Price</label>
-
-                <InputNumber
-                  size="large"
-                  placeholder="Product price"
-                  addonBefore="+"
-                  addonAfter="$"
-                  defaultValue={100}
-                />
+      <label htmlFor="quantity" className="fw-bold">
+        Product quantity
+      </label>
+      <InputNumber size="large" name="quantity" placeholder="Product quantity" addonBefore="+"  defaultValue={100} />
+      <label htmlFor="price" className="fw-bold">
+        Product Price
+      </label>
+      <InputNumber size="large" name="price" placeholder="Product price" addonBefore="+" addonAfter="$" defaultValue={100} />
+      {contextHolder}
             </div>
           </div>
+
         </div>
       </div>
     </Form>
   );
 }
 
-export default Addproduct;
+export default AddProduct;

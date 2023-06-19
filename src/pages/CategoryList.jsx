@@ -1,71 +1,137 @@
-import React from "react";
-import { Button, Space, Table } from "antd";
+import React, { useState, useEffect } from "react";
+import { Button, Space, Table, Modal, message } from "antd";
 import { Input } from "antd";
-import {FaTrash,FaEdit} from 'react-icons/fa'
+import { FaTrash, FaEdit } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import axios from "axios";
+
 const { Search } = Input;
 
-const columns = [
-  {
-    title: "SNo",
-    dataIndex: "key",
-  },
-  {
-    title: "Name",
-    dataIndex: "name",
-  },
-  {
-    title: "Product",
-    dataIndex: "product",
-  },
-  {
-    title: "Status",
-    dataIndex: "staus",
-  },
-  {
-    title: 'Action',
-    key: 'action',
-    render: () => (
-      <Space size="middle">        
-        <a href="">
-            <FaEdit/>
-            </a>
-            <a href="">
-        <FaTrash/>
-            </a>
-      </Space>
-    ),
-  },
-];
-const data1 = [];
-for (let i = 0; i < 46; i++) {
-  data1.push({
-    key: i,
-    name: `Edward King ${i}`,
-    product: i + 33,
-    staus: `London, Park Lane no. ${i}`,
-  });
-}
 function CategoryList() {
-  const onSearch = (value) => console.log(value);
+  // State variable to store the categories
+  const [categories, setCategories] = useState([]);
+
+  // Fetch categories on component mount
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  // Function to fetch categories from the server
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get("http://127.0.0.1:8000/api/category");
+      setCategories(response.data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // Function to delete a category
+  const onDeleteCategory = async (category_id) => {
+    // Display a confirmation modal before deleting the category
+    Modal.confirm({
+      title: "Delete Category",
+      content: "Are you sure you want to delete this category?",
+      onOk: async () => {
+        try {
+          await axios.delete(
+            `http://127.0.0.1:8000/api/category/${category_id}`
+          );
+          message.success("Category deleted successfully");
+          fetchCategories(); // Refresh the category list
+        } catch (error) {
+          console.log(error);
+          message.error("Error deleting category");
+        }
+      },
+      onCancel: () => {
+        // Do nothing if the user cancels the deletion
+      },
+    });
+  };
+
+  // Table columns configuration
+  const columns = [
+    {
+      title: "image",
+      dataIndex: "image",
+      render: (text, record) => (
+        <img src={record.category_image} alt="" style={{ width: "50px" }} />
+      ),
+    },
+    {
+      title: "id",
+      dataIndex: "category_id",
+    },
+    {
+      title: "title",
+      dataIndex: "category_name",
+    },
+    {
+      title: "slug",
+      dataIndex: "category_slug",
+    },
+    {
+      title: "Description",
+      dataIndex: "category_description",
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (text, record) => (
+        <Space size="middle">
+          {/* Link to update category */}
+          <Link to={`/updatecategory/${record.category_id}`}>
+            <FaEdit />
+          </Link>
+          {/* Delete category */}
+          <a href="#" onClick={() => onDeleteCategory(record.category_id)}>
+            <FaTrash />
+          </a>
+        </Space>
+      ),
+    },
+  ];
+
+  // Function to handle search
+  const onSearch = (value) => {
+    if (value.trim() === "") {
+      // If search value is empty, show all categories
+      fetchCategories();
+    } else {
+      // Filter categories based on search value
+      const filteredCategories = categories.filter((category) =>
+        category.category_name.toLowerCase().includes(value.toLowerCase())
+      );
+
+      // Update the state with filtered categories
+      setCategories(filteredCategories);
+    }
+  };
+
   return (
     <div className="mt-4">
       <div className="d-flex justify-content-between">
         <h3 className="mb-5 title">Categories</h3>
-        <Button type="primary">Add New Category</Button>
+
+        {/* Link to add a new category */}
+        <Link to={`/NewCategory`}>
+          <Button type="primary">Add New Category</Button>
+        </Link>
       </div>
       <div>
+        {/* Search input field */}
         <Search
-          placeholder="search categories"
+          placeholder="Search categories"
           allowClear
           enterButton="Search"
           size="large"
           onSearch={onSearch}
-          status="success"
           className="mb-4"
-
         />
 
-        <Table columns={columns} dataSource={data1}/>
+        {/* Table to display categories */}
+        <Table columns={columns} dataSource={categories} rowKey="category_id" />
       </div>
     </div>
   );

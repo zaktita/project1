@@ -3,7 +3,7 @@ import { Link, Navigate, Outlet, useNavigate  } from 'react-router-dom'
 import { useStateContext } from '../Contexts/ContextProvider'
 // import './default.css'
 import { Layout, Menu, theme } from 'antd';
-import { BellOutlined, PieChartOutlined,ShoppingCartOutlined, UserOutlined,UnorderedListOutlined ,PlusOutlined,CaretDownOutlined} from '@ant-design/icons';
+import { BellOutlined, PieChartOutlined,ShoppingCartOutlined,BgColorsOutlined,SkinOutlined, UserOutlined,UnorderedListOutlined ,PlusOutlined,CaretDownOutlined} from '@ant-design/icons';
 import logo  from '../images/logo.webp';
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -24,12 +24,14 @@ const items = [
   getItem('Product', 'Product', <ShoppingCartOutlined />,[
     getItem('Product list', 'ProductList',<CaretDownOutlined />),
     getItem('Add Product ', 'Addproduct',<PlusOutlined />),
+    getItem('colors', 'colors', <BgColorsOutlined /> ),
+    getItem('ProductForm', 'ProductForm', <BgColorsOutlined /> ),
+    getItem('sizes', 'sizes', <SkinOutlined /> ),
   ]),
   getItem('Category', 'Category', <UserOutlined />, [
     getItem('Category list', 'CategoryList',<CaretDownOutlined />),
     getItem('New category', 'NewCategory', <PlusOutlined />),
   ]),
-  
   getItem('Orders', 'Orders', <UnorderedListOutlined />,[
     getItem('Orders list', 'OrdersList',<CaretDownOutlined />),
     getItem('Orders Detail', 'OrdersDetail', <PlusOutlined />),
