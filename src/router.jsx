@@ -16,6 +16,7 @@ import UpdateCategory from "./pages/UpdateCategory.jsx";
 import AddSizes from "./pages/AddSizes.jsx";
 import AddColor from "./pages/AddColor.jsx";
 import Test from "./pages/ProductForm.jsx";
+import UpdateProduct from "./pages/UpdateProduct.jsx";
 
 const router = createBrowserRouter([
     {
@@ -39,6 +40,10 @@ const router = createBrowserRouter([
                 element:<Addproduct/>
             
             },
+            {
+                path: '/UpdateProduct/:productId',
+                element: <UpdateProduct />
+              },
             {
                 path:'/CategoryList',
                 element:<CategoryList/>

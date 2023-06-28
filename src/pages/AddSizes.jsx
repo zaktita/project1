@@ -92,6 +92,7 @@ function AddSizes() {
       message.success("size created successfully");
       form.resetFields(); // Clear form fields
       setIsSubmitted(true); // Set isSubmitted to true
+      setsize(""); // Clear size
       fetchsizes(); // Refresh the size list
     } catch (error) {
       if (error.response) {

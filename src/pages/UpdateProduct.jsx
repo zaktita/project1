@@ -1,16 +1,16 @@
-// AddProduct.js
 import React, { useEffect, useState } from "react";
 import { Input, Tag, Form, Select, Button, InputNumber, message } from "antd";
 import axios from "axios";
-
+import { useParams } from "react-router-dom";
 
 const { TextArea } = Input;
 const { Option } = Select;
+function UpdateProduct() {
+  const { productId } = useParams();
 
-function AddProduct() {
-  const [productTitle, setProductTitle] = useState("product title");
-  const [productSlug, setProductSlug] = useState("product-slug");
-  const [productDescription, setProductDescription] = useState("product description");
+  const [productTitle, setProductTitle] = useState("");
+  const [productSlug, setProductSlug] = useState("");
+  const [productDescription, setProductDescription] = useState("");
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [productImages, setProductImages] = useState([]);
@@ -25,11 +25,58 @@ function AddProduct() {
   const [colors, setColors] = useState([]);
   const [selectedColors, setSelectedColors] = useState([]);
   const [sizes, setSizes] = useState([]);
-  const [price, setPrice] = useState(100);
-  const [quantity, setQuantity] = useState(100);
+  const [price, setPrice] = useState();
+  const [quantity, setQuantity] = useState();
   const [selectedSizes, setSelectedSizes] = useState([]);
 
+  useEffect(() => {
+    fetchDataFromServer();
+  }, []);
 
+  const fetchDataFromServer = async () => {
+    try {
+      const response = await axios.get(
+        `http://127.0.0.1:8000/api/variations/${productId}`
+      );
+      console.log(response.data);
+      setCategories(response.data.category);
+      setSizes(response.data.sizes);
+      setColors(response.data.colors);
+
+      setProductTitle(response.data.product.title);
+      setProductSlug(response.data.product.slug);
+      setProductDescription(response.data.product.description);
+      setSelectedCategories(response.data.product.category_id);
+      setSelectedColors(response.data.product.colors);
+      setSelectedSizes(response.data.product.sizes);
+      setPrice(response.data.product.price);
+      setQuantity(response.data.product.quantity);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const tagRender = (props) => {
+    const { label, value, closable, onClose } = props;
+
+    const onPreventMouseDown = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+    };
+
+    return (
+      <Tag
+        color="blue"
+        onMouseDown={onPreventMouseDown}
+        closable={closable}
+        onClose={onClose}
+      >
+        {label}
+      </Tag>
+    );
+  };
+
+  // handle images uploads
 
   const handleImageUpload = (event) => {
     const files = event.target.files;
@@ -63,21 +110,6 @@ function AddProduct() {
     setMainImagePreview(null);
   };
 
-  useEffect(() => {
-    fetchDataFromServer();
-  }, []);
-
-  const fetchDataFromServer = async () => {
-    try {
-      const response = await axios.get("http://127.0.0.1:8000/api/variations");
-      setCategories(response.data.category);
-      setSizes(response.data.sizes);
-      setColors(response.data.colors);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const handleCategoryChange = (selectedValues) => {
     setSelectedCategories(selectedValues);
     console.log(selectedCategories);
@@ -98,29 +130,7 @@ function AddProduct() {
   const handleQuantityChange = (selectedValues) => {
     setQuantity(selectedValues);
   };
-
-  const tagRender = (props) => {
-    const { label, value, closable, onClose } = props;
-
-    const onPreventMouseDown = (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-    };
-
-    return (
-      <Tag
-        color="blue"
-        onMouseDown={onPreventMouseDown}
-        closable={closable}
-        onClose={onClose}
-      >
-        {label}
-      </Tag>
-    );
-  };
-
-  // post data to the server
-
+  // fetch data from server
 
   const handleSubmit = async () => {
     const formData = new FormData();
@@ -129,7 +139,7 @@ function AddProduct() {
       await form.validateFields();
       console.log("form submit working");
       console.log(productTitle);
-
+      formData.append("_method", "PUT");
       formData.append("title", productTitle);
       formData.append("slug", productSlug);
       formData.append("description", productDescription);
@@ -152,20 +162,19 @@ function AddProduct() {
       };
 
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/products",
+        `http://127.0.0.1:8000/api/products/${productId}`,
         formData,
         { headers: config.headers }
       );
       console.log(response.data);
-      message.success("Product created successfully");
-      form.resetFields(); // Clear form fields
+      message.success("Product updated successfully");
+      // form.resetFields(); // Clear form fields
       setIsSubmitted(true); // Set isSubmitted to true
     } catch (error) {
       console.log(error.response.data);
-      message.error("Error creating category");
+      message.error("Error updating product");
     }
   };
-
   return (
     <Form
       form={form}
@@ -174,7 +183,7 @@ function AddProduct() {
       className="d-flex align-items-start bg-white p-5 w-100"
     >
       <div className="container">
-        <h3 className="mb-4">Add New Product</h3>
+        <h3 className="mb-4">Update Product</h3>
         <div className="row">
           <div className="d-flex gap-3 col">
             <div className="d-flex flex-column gap-3 w-50">
@@ -183,21 +192,34 @@ function AddProduct() {
               <label htmlFor="title" className="fw-bold">
                 Product Title
               </label>
-              <Input placeholder="Product title" value={productTitle} name="title" size="large" onChange={(e) => setProductTitle(e.target.value)} />
+              <Input
+                placeholder="Product title"
+                name="title"
+                size="large"
+                value={productTitle}
+                onChange={(e) => setProductTitle(e.target.value)}
+              />
               <label htmlFor="slug" className="fw-bold">
                 Product slug
               </label>
-              <Input placeholder="Product slug" value={productTitle} name="slug" size="large" onChange={(e) => setProductSlug(e.target.value)}/>
+              <Input
+                placeholder="Product slug"
+                name="slug"
+                value={productSlug}
+                size="large"
+                // defaultValue={response.data.product.slug}
+                onChange={(e) => setProductSlug(e.target.value)}
+              />
 
               <label htmlFor="description" className="fw-bold">
                 Product Description
               </label>
               <TextArea
                 size="large"
-                value={productTitle}
                 rows={3}
                 name="description"
                 placeholder="Product description"
+                value={productDescription}
                 onChange={(e) => setProductDescription(e.target.value)}
               />
               <label htmlFor="categories" className="fw-bold">
@@ -281,12 +303,8 @@ function AddProduct() {
                 ))}
               </div>
 
-              <Button
-                type="primary"
-                htmlType="submit"
-                className="w-50"
-              >
-                Add Product
+              <Button type="primary" htmlType="submit" className="w-50">
+                Update Product
               </Button>
             </div>
             <div className="d-flex flex-column gap-3 w-50 col">
@@ -313,81 +331,54 @@ function AddProduct() {
               <label htmlFor="sizes" className="fw-bold">
                 Product Sizes
               </label>
-              <Form.Item
-                name="sizes"
-                rules={[  
-                  {
-                    required: true,
-                    type: "select",
-                    message: "Please enter the product sizes",
-                    min: 1,
-                    max: 15,
-                    }
-                    ]}
-                    >
-                      
+
               <Select
                 size="large"
                 mode="multiple"
-                // name="sizes"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter the product sizes",
+                  },
+                ]}
+                value={selectedSizes}
                 showArrow
                 tagRender={tagRender}
                 style={{ width: "100%" }}
-                value={selectedSizes}
                 onChange={handleSizeChange}
-                >
+              >
                 {sizes.map((e, index) => (
                   <Option key={index} value={e.id}>
                     {e.size}
                   </Option>
                 ))}
               </Select>
-                    </Form.Item>
 
               <label htmlFor="quantity" className="fw-bold">
                 Product quantity
               </label>
-              <Form.Item
-                name="quantity"
-                initialValue={quantity}
-
-                rules={[
-                  {
-                    required: true,
-                    type: "number",
-                    message: "Please enter the product price",
-                  },
-                ]}
-              >
                 <InputNumber
                   size="large"
-                  placeholder="Product quantity"
+                  // intialvalue={quantity}
+                  value={quantity}
+                  // defaultValue={quantity}
+                  // placeholder="Product quantity"
                   addonBefore="+"
                   onChange={handleQuantityChange}
                 />
-              </Form.Item>
               <label htmlFor="price" className="fw-bold">
                 Product Price
               </label>
-              <Form.Item
-                name="price"
-                initialValue={price}
-                rules={[
-                  {
-                    required: true,
-                    type: "number",
-                    message: "Please enter the product price",
-                  },
-                ]}
-              >
+            
                 <InputNumber
+                  value={price}
+
                   size="large"
-                  placeholder="Product price"
                   addonBefore="+"
                   addonAfter="$"
                   onChange={handlePriceChange}
                 />
-              </Form.Item>
+
               {contextHolder}
             </div>
           </div>
@@ -397,4 +388,4 @@ function AddProduct() {
   );
 }
 
-export default AddProduct;
+export default UpdateProduct;
