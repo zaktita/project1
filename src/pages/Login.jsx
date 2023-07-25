@@ -2,17 +2,19 @@ import React, { useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import AuthService from '../services/AuthService';
 
+
+
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  // const history = useNavigate();
+
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    
     AuthService.login(email, password)
       .then(() => {
-        // Navigate('/dashboard');
         console.log('success');
       return  <Navigate to='/dashboard'/>
       })

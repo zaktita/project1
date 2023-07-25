@@ -13,8 +13,8 @@ export function ContextProvider({children}) {
     const [user,SetUser]=useState({
       name: localStorage.getItem('user')
     })
-    // const [token,SetTokenKey]=useState(123)
-    const [token,SetTokenKey]=useState(localStorage.getItem('ACCESS_TOKEN'))
+    const [token,SetTokenKey]=useState(123)
+    // const [token,SetTokenKey]=useState(localStorage.getItem('ACCESS_TOKEN'))
 
     const setToken = (token)=>{
         SetTokenKey(token)

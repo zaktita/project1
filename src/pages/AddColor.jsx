@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Form, Input,Space, message,Table,Modal } from "antd";
+import { Button, Form, Input, Space, message, Table, Modal } from "antd";
 import axios from "axios";
 import { FaTrash } from "react-icons/fa";
 
@@ -8,8 +8,6 @@ function AddColor() {
   const [colors, setColors] = useState("");
   const [color, setColor] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
-
-
 
   // Fetch categories on component mount
   useEffect(() => {
@@ -27,7 +25,6 @@ function AddColor() {
     }
   };
 
-
   // Function to delete a color
   const onDeleteColor = async (id) => {
     // Display a confirmation modal before deleting the color
@@ -36,9 +33,7 @@ function AddColor() {
       content: "Are you sure you want to delete this color?",
       onOk: async () => {
         try {
-          await axios.delete(
-            `http://127.0.0.1:8000/api/colors/${id}`
-          );
+          await axios.delete(`http://127.0.0.1:8000/api/colors/${id}`);
           message.success("Color deleted successfully");
           fetchColors(); // Refresh the color list
         } catch (error) {
@@ -52,33 +47,30 @@ function AddColor() {
     });
   };
 
+  // Table columns configuration
+  const columns = [
+    {
+      title: "id",
+      dataIndex: "id",
+    },
+    {
+      title: "name",
+      dataIndex: "color_name",
+    },
 
- // Table columns configuration
- const columns = [
-
-  {
-    title: "id",
-    dataIndex: "id",
-  },
-  {
-    title: "name",
-    dataIndex: "color_name",
-  },
-
-  {
-    title: "Action",
-    key: "action",
-    render: (text, record) => (
-      <Space size="middle">
-
-        {/* Delete color */}
-        <a href="#" onClick={() => onDeleteColor(record.id)}>
-          <FaTrash />
-        </a>
-      </Space>
-    ),
-  },
-];
+    {
+      title: "Action",
+      key: "action",
+      render: (text, record) => (
+        <Space size="middle">
+          {/* Delete color */}
+          <a href="#" onClick={() => onDeleteColor(record.id)}>
+            <FaTrash />
+          </a>
+        </Space>
+      ),
+    },
+  ];
 
   // submit color form
   const handleSubmit = async () => {
@@ -89,7 +81,7 @@ function AddColor() {
       const formData = new FormData();
       formData.append("color_name", color);
       console.log(formData);
-      typeof formData;
+      // typeof formData;
       const config = {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -120,32 +112,28 @@ function AddColor() {
   };
 
   return (
-   <>
+    <>
+      <Form
+        form={form}
+        onFinish={handleSubmit}
+        layout="horizontal"
+        className="d-flex align-items-start bg-white p-5 w-100"
+      >
+        <div className="d-flex justify-content-between">
+          <Input
+            placeholder="Enter color"
+            value={color}
+            onChange={(e) => setColor(e.target.value)}
+            className="w-75"
+          />
 
-<Form
-      form={form}
-      onFinish={handleSubmit}
-      layout="horizontal"
-      className="d-flex align-items-start bg-white p-5 w-100"
-    >
-
-      <div className="d-flex justify-content-between">
-        <Input
-          placeholder="Enter color"
-          value={color}
-          onChange={(e) => setColor(e.target.value)}
-          className="w-75"
-        />
-
-        <Button type="primary" htmlType="submit" >
-        Add Color
-        </Button>
-      </div>
-    </Form>
-    <Table columns={columns} dataSource={colors} rowKey="id" />
-
-   </>
-
+          <Button type="primary" htmlType="submit">
+            Add Color
+          </Button>
+        </div>
+      </Form>
+      <Table columns={columns} dataSource={colors} rowKey="id" />
+    </>
   );
 }
 

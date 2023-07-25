@@ -3,14 +3,15 @@ import React, { useEffect, useState } from "react";
 import { Input, Tag, Form, Select, Button, InputNumber, message } from "antd";
 import axios from "axios";
 
-
 const { TextArea } = Input;
 const { Option } = Select;
 
 function AddProduct() {
   const [productTitle, setProductTitle] = useState("product title");
   const [productSlug, setProductSlug] = useState("product-slug");
-  const [productDescription, setProductDescription] = useState("product description");
+  const [productDescription, setProductDescription] = useState(
+    "product description"
+  );
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [productImages, setProductImages] = useState([]);
@@ -28,8 +29,6 @@ function AddProduct() {
   const [price, setPrice] = useState(100);
   const [quantity, setQuantity] = useState(100);
   const [selectedSizes, setSelectedSizes] = useState([]);
-
-
 
   const handleImageUpload = (event) => {
     const files = event.target.files;
@@ -85,13 +84,13 @@ function AddProduct() {
 
   const handleColorChange = (selectedValues) => {
     setSelectedColors(selectedValues);
-    console.log(selectedValues);
     console.log(selectedColors);
   };
 
   const handleSizeChange = (selectedValues) => {
     setSelectedSizes(selectedValues);
   };
+
   const handlePriceChange = (selectedValues) => {
     setPrice(selectedValues);
   };
@@ -120,7 +119,6 @@ function AddProduct() {
   };
 
   // post data to the server
-
 
   const handleSubmit = async () => {
     const formData = new FormData();
@@ -183,18 +181,30 @@ function AddProduct() {
               <label htmlFor="title" className="fw-bold">
                 Product Title
               </label>
-              <Input placeholder="Product title" value={productTitle} name="title" size="large" onChange={(e) => setProductTitle(e.target.value)} />
+              <Input
+                placeholder="Product title"
+                value={productTitle}
+                name="title"
+                size="large"
+                onChange={(e) => setProductTitle(e.target.value)}
+              />
               <label htmlFor="slug" className="fw-bold">
                 Product slug
               </label>
-              <Input placeholder="Product slug" value={productTitle} name="slug" size="large" onChange={(e) => setProductSlug(e.target.value)}/>
+              <Input
+                placeholder="Product slug"
+                value={productSlug}
+                name="slug"
+                size="large"
+                onChange={(e) => setProductSlug(e.target.value)}
+              />
 
               <label htmlFor="description" className="fw-bold">
                 Product Description
               </label>
               <TextArea
                 size="large"
-                value={productTitle}
+                value={productDescription}
                 rows={3}
                 name="description"
                 placeholder="Product description"
@@ -281,11 +291,7 @@ function AddProduct() {
                 ))}
               </div>
 
-              <Button
-                type="primary"
-                htmlType="submit"
-                className="w-50"
-              >
+              <Button type="primary" htmlType="submit" className="w-50">
                 Add Product
               </Button>
             </div>
@@ -305,7 +311,7 @@ function AddProduct() {
                 onChange={handleColorChange}
               >
                 {colors.map((e, index) => (
-                  <Option key={index} value={e.id}>
+                  <Option key={index} value={e.color_name}>
                     {e.color_name}
                   </Option>
                 ))}
@@ -313,36 +319,37 @@ function AddProduct() {
               <label htmlFor="sizes" className="fw-bold">
                 Product Sizes
               </label>
-              <Form.Item
+              {/* <Form.Item
                 name="sizes"
-                rules={[  
+                rules={[
                   {
                     required: true,
                     type: "select",
                     message: "Please enter the product sizes",
                     min: 1,
                     max: 15,
-                    }
-                    ]}
-                    >
-                      
-              <Select
-                size="large"
-                mode="multiple"
-                // name="sizes"
-                showArrow
-                tagRender={tagRender}
-                style={{ width: "100%" }}
-                value={selectedSizes}
-                onChange={handleSizeChange}
+                  },
+                ]}
+              > */}
+                <Select
+                  size="large"
+                  mode="multiple"
+                  name="sizes"
+                  showArrow
+                  tagRender={tagRender}
+                  style={{ width: "100%" }}
+                  value={selectedSizes}
+                  onChange={handleSizeChange}
                 >
-                {sizes.map((e, index) => (
-                  <Option key={index} value={e.id}>
-                    {e.size}
-                  </Option>
-                ))}
-              </Select>
-                    </Form.Item>
+                  {sizes
+                    .sort((a, b) => a.size - b.size)
+                    .map((e, index) => (
+                      <Option key={index} value={e.size}>
+                        {e.size}
+                      </Option>
+                    ))}
+                </Select>
+              {/* </Form.Item> */}
 
               <label htmlFor="quantity" className="fw-bold">
                 Product quantity
@@ -350,7 +357,6 @@ function AddProduct() {
               <Form.Item
                 name="quantity"
                 initialValue={quantity}
-
                 rules={[
                   {
                     required: true,
