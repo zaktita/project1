@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Button, Select, Space, Table, Tag } from "antd";
 import { Input } from "antd";
-import { FaTrash, FaEdit } from "react-icons/fa";
+import { AiFillEye } from "react-icons/ai";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const { Search } = Input;
 const current = new Date();
@@ -134,6 +135,15 @@ function OrdersList() {
         />
       ),
     },
+    {
+      title: "details",
+      key: "details",
+      render : (text, record) => (
+        <Link to={`/OrdersDetail/${record.order_id}`}>
+              <AiFillEye size={20}  />
+            </Link>
+          )}
+    
   ];
 
   return (
