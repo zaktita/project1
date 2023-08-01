@@ -4,7 +4,7 @@ const API_URL = 'http://localhost:8000/api';
 
 class AuthService {
   login(email, password) {
-    return axios
+    return  axios
       .post(`${API_URL}/login`, { email, password })
       .then(response => {
         if (response.data.token) {

@@ -1,13 +1,25 @@
-import React, { useState } from 'react'
-import { Link, Navigate, Outlet, useNavigate  } from 'react-router-dom'
-import { useStateContext } from '../Contexts/ContextProvider'
+import React, { useEffect, useState } from "react";
+import { Link, Navigate, Outlet, useNavigate } from "react-router-dom";
+import { useStateContext } from "../Contexts/ContextProvider";
 // import './default.css'
-import { Layout, Menu, theme } from 'antd';
-import { BellOutlined, PieChartOutlined,ShoppingCartOutlined,BgColorsOutlined,SkinOutlined, UserOutlined,UnorderedListOutlined ,PlusOutlined,CaretDownOutlined} from '@ant-design/icons';
-import logo  from '../images/logo.webp';
+import Dropdown from "react-bootstrap/Dropdown";
+
+import { Breadcrumb, Layout, Menu, theme } from "antd";
+import {
+  BellOutlined,
+  PieChartOutlined,
+  ShoppingCartOutlined,
+  BgColorsOutlined,
+  SkinOutlined,
+  UserOutlined,
+  UnorderedListOutlined,
+  PlusOutlined,
+  CaretDownOutlined,
+} from "@ant-design/icons";
+import logo from "../images/logo.webp";
+import axiosClient from "../axios_client";
 
 const { Header, Content, Footer, Sider } = Layout;
-
 
 function getItem(label, key, icon, children) {
   return {
@@ -19,79 +31,103 @@ function getItem(label, key, icon, children) {
 }
 
 const items = [
-  getItem('Overview', 'Dashboard', <PieChartOutlined />),
-  getItem('user', 'Users', <PieChartOutlined />),
-  getItem('Product', 'Product', <ShoppingCartOutlined />,[
-    getItem('Product list', 'ProductList',<CaretDownOutlined />),
-    getItem('Add Product ', 'Addproduct',<PlusOutlined />),
-    getItem('colors', 'colors', <BgColorsOutlined /> ),
-    getItem('sizes', 'sizes', <SkinOutlined /> ),
+  getItem("Overview", "Dashboard", <PieChartOutlined />),
+  getItem("user", "Users", <PieChartOutlined />),
+  getItem("Product", "Product", <ShoppingCartOutlined />, [
+    getItem("Product list", "ProductList", <CaretDownOutlined />),
+    getItem("Add Product ", "Addproduct", <PlusOutlined />),
+    getItem("colors", "colors", <BgColorsOutlined />),
+    getItem("sizes", "sizes", <SkinOutlined />),
   ]),
-  getItem('Category', 'Category', <UserOutlined />, [
-    getItem('Category list', 'CategoryList',<CaretDownOutlined />),
-    getItem('New category', 'NewCategory', <PlusOutlined />),
+  getItem("Category", "Category", <UserOutlined />, [
+    getItem("Category list", "CategoryList", <CaretDownOutlined />),
+    getItem("New category", "NewCategory", <PlusOutlined />),
   ]),
-  getItem('Orders', 'Orders', <UnorderedListOutlined />,[
-    getItem('Orders list', 'OrdersList',<CaretDownOutlined />),
-    getItem('Orders Detail', 'OrdersDetail', <PlusOutlined />),
+  getItem("Orders", "Orders", <UnorderedListOutlined />, [
+    getItem("Orders list", "OrdersList", <CaretDownOutlined />),
+    getItem("Orders Detail", "OrdersDetail", <PlusOutlined />),
   ]),
 ];
+
+
+
 function DefaultLayout() {
-
   const navigate = useNavigate();
-    const {user,token}= useStateContext()
-    const [collapsed, setCollapsed] = useState(false);
-    if(!token){
-        return <Navigate to='/login'/>
-    }
-    const {
-      token: { colorBgContainer },
-    } = theme.useToken();
-  return (
-<Layout
-      style={{
-        minHeight: '100vh',
-        // position: 'sticky',
-        // top: '30px',
-        // left:'0'
-      }}
-    >
 
+  const { user, token, setUser,
+    setToken, } = useStateContext();
+  const [collapsed, setCollapsed] = useState(false);
+
+useEffect(() => {
+
+  if (!token) {
+    navigate("/login");
+  }
+},[token])
+
+
+
+
+  const {
+    token: { colorBgContainer },
+  } = theme.useToken();
+
+
+
+  const logout = async () => {
+   try {
+      const response = await axiosClient.post("/logout",null,{
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('ACCESS_TOKEN')}`,
+        },
+      })
+      setUser({});
+      setToken(null);
+      localStorage.removeItem("ACCESS_TOKEN");
+    }catch(err){
+      console.log(err);
+    }
+  };
+
+
+
+  return (
+    <Layout
+      style={{minHeight: "100vh",}}
+    >
       {/* side bar section  */}
 
-
-      <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
-        <div className="demo-logo-vertical" >
+      <Sider
+        collapsible
+        collapsed={collapsed}
+        onCollapse={(value) => setCollapsed(value)}
+      >
+        <div className="demo-logo-vertical">
           <img src={logo} alt="" />
         </div>
-        <Menu theme="dark" defaultSelectedKeys={['Overview']} mode="inline" items={items} 
-       onClick={({ key }) => {
-        if (key == "signout") {
-        } else {
-          navigate(key);
-        }
-      }}
+        <Menu
+          theme="dark"
+          defaultSelectedKeys={["Overview"]}
+          mode="inline"
+          items={items}
+          onClick={({ key }) => {
+            if (key == "signout") {
+            } else {
+              navigate(key);
+            }
+          }}
         />
       </Sider>
 
-
       <Layout>
-
-
         {/* header section  */}
         <Header
           style={{
             padding: 0,
             background: colorBgContainer,
           }}
-      >
-        {/* {React.createElement(
-            collapsed ? MenuUnfoldOutlined : MenuFoldOutlined,
-            {
-              className: "trigger",
-              onClick: () => setCollapsed(!collapsed),
-            }
-          )} */}
+        >
+
           <div className="d-flex gap-4 align-items-center justify-content-end px-2 shadow-sm">
             <div className="position-relative">
               <BellOutlined className="fs-4" />
@@ -115,90 +151,61 @@ function DefaultLayout() {
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                <h5 className="mb-0">bill</h5>
-                <p className="mb-0">bill.gates@gmail.com</p>
+                <h5 className="mb-0">{user.name}</h5>
+                <p className="mb-0">{user.email}</p>
               </div>
-              <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                <li>
+
+              <Dropdown>
+                <Dropdown.Toggle
+                  variant="transparent"
+                  id="dropdown-basic"
+                ></Dropdown.Toggle>
+
+                <Dropdown.Menu>
                   <Link
                     className="dropdown-item py-1 mb-1"
                     style={{ height: "auto", lineHeight: "20px" }}
                     to="/"
                   >
-                    View Profile
+                    <Dropdown.Item>View Profile</Dropdown.Item>
                   </Link>
-                </li>
-                <li>
                   <Link
                     className="dropdown-item py-1 mb-1"
                     style={{ height: "auto", lineHeight: "20px" }}
+                    onClick={logout}
                     to="/"
                   >
-                    Signout
+                    <Dropdown.Item>Signout</Dropdown.Item>
                   </Link>
-                </li>
-              </div>
+                </Dropdown.Menu>
+              </Dropdown>
             </div>
           </div>
         </Header>
 
-
-         {/* content section */}
+        {/* content section */}
         <Content
           style={{
-            margin: '10px 0',
+            margin: "10px 0",
           }}
         >
-          {/* <Breadcrumb
-            style={{
-              margin: '16px 0',
-            }}
-          >
-            <Breadcrumb.Item>User</Breadcrumb.Item>
-            <Breadcrumb.Item>Bill</Breadcrumb.Item>
-            <Breadcrumb.Item>Bill</Breadcrumb.Item>
-          </Breadcrumb> */}
+
           <div
             style={{
               padding: 24,
               minHeight: 360,
-              background: 'transparent',
+              background: "transparent",
             }}
           >
-            <div>
-     </div>
-          <Outlet/>
+            <div></div>
+            <Outlet />
           </div>
         </Content>
-        {/* <Footer
-          style={{
-            textAlign: 'center',
-          }}
-        >
-          Ant Design ©2023 Created by Ant UED
-        </Footer> */}
+
       </Layout>
     </Layout>
-);
-    // <div className='contentContainer'>
-    //     <aside>
-    //       <Link className='links' to='/dashboard'>dashboard</Link>
-    //       <Link className='links' to='/users'>users</Link>
-    //     </aside>
-    //     <main>
-    //     <header>
-    //       <div>
-    //       <h2>this is a header</h2>
-    //       </div>
-    //       <div>
-    //       <h2>{JSON.parse(user.name).websiteUser.name}</h2>
-    //       {console.log(JSON.parse(user.name).websiteUser.name)}
-    //       </div>
-    //     </header>
-    //     <Outlet/>
-    //     </main>
-    // </div>
-  
+  );
+
 }
 
-export default DefaultLayout
+export default DefaultLayout;

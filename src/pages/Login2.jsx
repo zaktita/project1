@@ -51,11 +51,16 @@ function Login() {
       });
   }
 
+//  const onFinish = (values) => {
+//     console.log('Received values of form: ', values);
+//   };
   return (
 
 <div
   style={{height: '100vh', display:'Grid', placeItems:'center'}}
 >
+{/* {errors && message.error(errors)} */}
+{errors && <div>{errors}</div>}
 
 <Form
       name="normal_login"
@@ -63,6 +68,7 @@ function Login() {
       initialValues={{
         remember: true,
       }}
+      onFinish={onFinish}
     >
       <h2>Login to your account</h2>
 
