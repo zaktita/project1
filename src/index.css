@@ -92,3 +92,8 @@ body {
 :where(.css-dfjnss).ant-form-item .ant-form-item-feedback-icon-success {
   color: #52c41a;
 }
+
+.ant-input , .ant-input-affix-wrapper{
+  background-color: transparent;
+  color: black;
+}

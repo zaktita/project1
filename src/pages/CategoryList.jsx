@@ -81,7 +81,7 @@ function CategoryList() {
       render: (text, record) => (
         <Space size="middle">
           {/* Link to update category */}
-          <Link to={`/updatecategory/${record.category_id}`}>
+          <Link to={`/updatecategory/${record.category_name}`}>
             <FaEdit />
           </Link>
           {/* Delete category */}

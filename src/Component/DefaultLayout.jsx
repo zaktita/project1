@@ -15,6 +15,7 @@ import {
   UnorderedListOutlined,
   PlusOutlined,
   CaretDownOutlined,
+  PercentageOutlined,
 } from "@ant-design/icons";
 import logo from "../images/logo.webp";
 import axiosClient from "../axios_client";
@@ -38,63 +39,55 @@ const items = [
     getItem("Add Product ", "Addproduct", <PlusOutlined />),
     getItem("colors", "colors", <BgColorsOutlined />),
     getItem("sizes", "sizes", <SkinOutlined />),
+    getItem("coupon", "coupon", <PercentageOutlined />),
   ]),
   getItem("Category", "Category", <UserOutlined />, [
     getItem("Category list", "CategoryList", <CaretDownOutlined />),
     getItem("New category", "NewCategory", <PlusOutlined />),
   ]),
-  getItem("Orders", "Orders", <UnorderedListOutlined />, [
-    getItem("Orders list", "OrdersList", <CaretDownOutlined />),
-    getItem("Orders Detail", "OrdersDetail", <PlusOutlined />),
-  ]),
+  getItem("Orders list", "OrdersList", <UnorderedListOutlined />),
 ];
-
-
 
 function DefaultLayout() {
   const navigate = useNavigate();
 
-  const { user, token, setUser,
-    setToken, } = useStateContext();
+  const { user, token, setUser, setTokenFunction } = useStateContext();
   const [collapsed, setCollapsed] = useState(false);
 
-useEffect(() => {
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+    }
+  }, [token]);
 
-  if (!token) {
-    navigate("/login");
-  }
-},[token])
-
-
-
+  // useEffect(() => {
+  //   console.log('user context',user);
+  //   localStorage.setItem("user", user);
+  // });
 
   const {
     token: { colorBgContainer },
   } = theme.useToken();
 
-
-
   const logout = async () => {
-   try {
-      const response = await axiosClient.post("/logout",null,{
+    console.log(token);
+    try {
+      const response = await axiosClient.post("/logout", null, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('ACCESS_TOKEN')}`,
+          Authorization: `Bearer ${token}`,
+          // Authorization: `Bearer ${localStorage.getItem('ACCESS_TOKEN')}`,
         },
-      })
+      });
       setUser({});
-      setToken(null);
+      setTokenFunction(null);
       localStorage.removeItem("ACCESS_TOKEN");
-    }catch(err){
+    } catch (err) {
       console.log(err);
     }
   };
 
-
-
   return (
-    <Layout
-      style={{minHeight: "100vh",}}
-    >
+    <Layout style={{ minHeight: "100vh" }}>
       {/* side bar section  */}
 
       <Sider
@@ -127,7 +120,6 @@ useEffect(() => {
             background: colorBgContainer,
           }}
         >
-
           <div className="d-flex gap-4 align-items-center justify-content-end px-2 shadow-sm">
             <div className="position-relative">
               <BellOutlined className="fs-4" />
@@ -151,32 +143,31 @@ useEffect(() => {
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                <h5 className="mb-0">{user.name}</h5>
-                <p className="mb-0">{user.email}</p>
+                <h5 className="mb-0">{user.name}</h5> 
+                 <p className="mb-0">{user.email}</p>
               </div>
 
               <Dropdown>
-                <Dropdown.Toggle
-                  variant="transparent"
-                  id="dropdown-basic"
-                ></Dropdown.Toggle>
+                <Dropdown.Toggle variant="transparent" id="dropdown-basic">
+                  {/* Render the dropdown toggle content here */}
+                </Dropdown.Toggle>
 
                 <Dropdown.Menu>
-                  <Link
+                  <Dropdown.Item
                     className="dropdown-item py-1 mb-1"
                     style={{ height: "auto", lineHeight: "20px" }}
-                    to="/"
                   >
-                    <Dropdown.Item>View Profile</Dropdown.Item>
-                  </Link>
-                  <Link
+                    {/* View Profile content */}
+                    View Profile
+                  </Dropdown.Item>
+                  <Dropdown.Item
                     className="dropdown-item py-1 mb-1"
                     style={{ height: "auto", lineHeight: "20px" }}
                     onClick={logout}
-                    to="/"
                   >
-                    <Dropdown.Item>Signout</Dropdown.Item>
-                  </Link>
+                    {/* Signout content */}
+                    Signout
+                  </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
             </div>
@@ -189,7 +180,6 @@ useEffect(() => {
             margin: "10px 0",
           }}
         >
-
           <div
             style={{
               padding: 24,
@@ -201,11 +191,9 @@ useEffect(() => {
             <Outlet />
           </div>
         </Content>
-
       </Layout>
     </Layout>
   );
-
 }
 
 export default DefaultLayout;

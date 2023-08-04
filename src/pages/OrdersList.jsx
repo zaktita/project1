@@ -12,8 +12,6 @@ const date = `${current.getDate()}/${
 }/${current.getFullYear()}`;
 
 function OrdersList() {
-  const onSearch = (value) => console.log(value);
-
   const [Orders, setOrders] = useState([]);
   const [Status, setStatus] = useState("");
   // Function to fetchOrdersFromServer categories from the server
@@ -31,30 +29,29 @@ function OrdersList() {
     fetchOrdersFromServer();
   }, []);
 
-
   const updateStatus = async (id, value) => {
     console.log(value);
     const config = {
       headers: {
-          "Content-Type": "multipart/form-data",
-          Accept: "application/json",
+        "Content-Type": "multipart/form-data",
+        Accept: "application/json",
       },
-  };
+    };
     try {
       const response = await axios.post(
         `http://000000000:8000/api/orders/${id}`,
         {
           status: value,
-          '_method': 'PUT'
+          _method: "PUT",
         },
-        { headers: config.headers}
+        { headers: config.headers }
       );
       console.log(response.data);
       fetchOrdersFromServer();
     } catch (error) {
       console.log(error);
     }
-  }
+  };
   const tagRender = (props) => {
     const { label, value, closable, onClose, color } = props;
     const onPreventMouseDown = (event) => {
@@ -110,7 +107,9 @@ function OrdersList() {
           tagRender={tagRender}
           placeholder="Select an option"
           // optionFilterProp="children"
-          onChange={(value)=> {updateStatus(record.order_id, value)}}
+          onChange={(value) => {
+            updateStatus(record.order_id, value);
+          }}
           defaultValue={record.status}
           filterOption={(input, option) =>
             (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
@@ -138,33 +137,18 @@ function OrdersList() {
     {
       title: "details",
       key: "details",
-      render : (text, record) => (
+      render: (text, record) => (
         <Link to={`/OrdersDetail/${record.order_id}`}>
-              <AiFillEye size={20}  />
-            </Link>
-          )}
-    
+          <AiFillEye size={20} />
+        </Link>
+      ),
+    },
   ];
 
   return (
     <div className="mt-4">
-      <div className="d-flex justify-content-between">
-        <h3 className="mb-5 title">Orders</h3>
-        <Button type="primary">Add New Order</Button>
-      </div>
-      <div>
-        <Search
-          placeholder="search Orders"
-          allowClear
-          enterButton="Search"
-          size="large"
-          onSearch={onSearch}
-          status="success"
-          className="mb-4"
-        />
-
-        <Table columns={columns} dataSource={Orders} />
-      </div>
+      <h3 className="mb-5 title">Orders</h3>
+      <Table columns={columns} dataSource={Orders} />
     </div>
   );
 }

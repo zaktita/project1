@@ -4,7 +4,6 @@ import GuestLayout from "./Component/GuestLayout.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Addproduct from "./pages/Addproduct.jsx";
 import Login from "./pages/Login.jsx";
-import Login2 from "./pages/Login2.jsx";
 import NotFound from "./pages/NotFound.jsx";
 import Register from "./pages/Register.jsx";
 import Users from "./pages/Users.jsx";
@@ -17,6 +16,7 @@ import UpdateCategory from "./pages/UpdateCategory.jsx";
 import AddSizes from "./pages/AddSizes.jsx";
 import AddColor from "./pages/AddColor.jsx";
 import UpdateProduct from "./pages/UpdateProduct.jsx";
+import AddCoupon from "./pages/AddCoupon.jsx";
 
 const router = createBrowserRouter([
     {
@@ -57,7 +57,7 @@ const router = createBrowserRouter([
                 element:<NewCategory/>
             },
             {
-                path: '/UpdateCategory/:categoryId',
+                path: '/UpdateCategory/:category_name',
                 element: <UpdateCategory />
               },
               
@@ -77,6 +77,10 @@ const router = createBrowserRouter([
                 path:'/colors',
                 element:<AddColor/>
             },
+            {
+                path:'/coupon',
+                element:<AddCoupon/>
+            },
         ]
     },
     {
@@ -87,10 +91,6 @@ const router = createBrowserRouter([
             {
                 path:'/login',
                 element:<Login/>
-            },
-            {
-                path:'/login2',
-                element:<Login2/>
             },
             {
                 path:'/Register',

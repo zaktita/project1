@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 const { TextArea } = Input;
 
 function UpdateCategory() {
-  const { categoryId } = useParams();
+  const { category_name } = useParams();
 
   const [categoryName, setCategoryName] = useState("");
   const [categorySlug, setCategorySlug] = useState("");
@@ -18,7 +18,7 @@ function UpdateCategory() {
   useEffect(() => {
     // Fetch category data and set initial values
     fetchCategoryData();
-  }, [categoryId]);
+  }, [category_name]);
 
 
 
@@ -26,9 +26,10 @@ function UpdateCategory() {
   const fetchCategoryData = async () => {
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/category/${categoryId}`
+        // `http://127.0.0.1:8000/api/category/sneakers`
+        `http://127.0.0.1:8000/api/category/${category_name}`
       );
-      const categoryData = response.data.data;
+      const categoryData = response.data.category;
   
       if (categoryData) {
         setCategoryName(categoryData.category_name);
