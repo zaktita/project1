@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Form, Input, Button, message } from "antd";
 import { SmileOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
+import axiosClient from "../axios_client";
 
 const { TextArea } = Input;
 
@@ -10,6 +10,7 @@ function UpdateCategory() {
   const { category_name } = useParams();
 
   const [categoryName, setCategoryName] = useState("");
+  const [categoryId, setcategoryId] = useState();
   const [categorySlug, setCategorySlug] = useState("");
   const [categoryDescription, setCategoryDescription] = useState("");
   const [categoryImage, setCategoryImage] = useState(null);
@@ -25,9 +26,8 @@ function UpdateCategory() {
 
   const fetchCategoryData = async () => {
     try {
-      const response = await axios.get(
-        // `http://127.0.0.1:8000/api/category/sneakers`
-        `http://127.0.0.1:8000/api/category/${category_name}`
+      const response = await axiosClient.get(
+        `/category/${category_name}`
       );
       const categoryData = response.data.category;
   
@@ -37,6 +37,7 @@ function UpdateCategory() {
         setCategoryDescription(categoryData.category_description);
         setCategoryImage(categoryData.category_image);
         setImagePreview(categoryData.category_image);
+        setcategoryId(categoryData.category_id);
       }
     } catch (error) {
       console.log(error);
@@ -68,10 +69,10 @@ function UpdateCategory() {
       },
     };
 
-    axios
-      .post(`http://127.0.0.1:8000/api/category/${categoryId}`, formData, config)
+    axiosClient
+      .post(`/category/${categoryId}`, formData, config)
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         message.success("Category Updated Successfully");
       })
       .catch((error) => {

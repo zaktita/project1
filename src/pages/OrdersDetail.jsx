@@ -2,6 +2,9 @@ import { Table } from "antd";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import { useNotificationContext } from "../Contexts/NotificationContext";
+import axiosClient from "../axios_client";
+import {API_BASE_URL} from "../axios_client";
 
 function OrdersDetail() {
   const { orderId } = useParams();
@@ -11,13 +14,12 @@ function OrdersDetail() {
 
   const fetchDataFromServer = async () => {
     try {
-      const response = await axios.get(
-        `http://127.0.0.1:8000/api/orders/${orderId}`
+      const response = await axiosClient.get(
+        `/orders/${orderId}`
       );
       setOrder(response.data.order);
       setOrderDetails(response.data.orderDetails);
       setOrderItems(response.data.orderItems);
-      console.log(response.data);
     } catch (error) {
       console.log(error);
     }
@@ -26,14 +28,18 @@ function OrdersDetail() {
     fetchDataFromServer();
   }, []);
 
-  const dateConverter = (datetoconvert) => {
-    let date = new Date(datetoconvert);
-    let day = date.getDate();
-    let month = date.getMonth() + 1;
-    let year = date.getFullYear();
-    let newDate = `${day}-${month}-${year}`;
-    return newDate;
-  };
+  // const dateConverter = (datetoconvert) => {
+  //   let date = new Date(datetoconvert);
+  //   let day = date.getDate();
+  //   let month = date.getMonth() + 1;
+  //   let year = date.getFullYear();
+  //   let newDate = `${day}-${month}-${year}`;
+  //   return newDate;
+  // };
+
+  const {
+    dateConverter
+  } = useNotificationContext();
 
   const columns = [
     {
@@ -42,7 +48,7 @@ function OrdersDetail() {
       render(text, record) {
         return (
           <img
-            src={`http://127.0.0.1:8000/storage/${record.image}`}
+            src={`${API_BASE_URL}/storage/${record.image}`}
             alt="product"
             style={{ width: "100px", height: "100px" }}
           />
@@ -135,17 +141,24 @@ function OrdersDetail() {
 
       <div className="order-item my-2 p-3">
         <h2 className="fw-regular fs-4">Order items</h2>
-        <Table dataSource={OrderItems} columns={columns} 
+        <Table dataSource={OrderItems} columns={columns}  rowKey="item_id"
         pagination={OrderItems.length <8 ? false : true}
         />
       </div>
       <div className="order-item my-2 p-3 text-end">
+      <h3 className="fw-regular fs-5 ">
+          Discount: {"   "}
+          <span className="fw-regular fs-6 text-secondary ml-2">
+            {Order.discount} %
+          </span>
+        </h3>
         <h3 className="fw-regular fs-5 ">
           Total: {"   "}
           <span className="fw-regular fs-6 text-secondary ml-2">
             {Order.total_price} DH
           </span>
         </h3>
+        
       </div>
     </div>
   );

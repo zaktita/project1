@@ -17,7 +17,6 @@ function Register() {
   const navigate = useNavigate();
 
   function handleSubmit(e) {
-    console.log("btn working");
     e.preventDefault();
     setErrors({ __html: "" });
 

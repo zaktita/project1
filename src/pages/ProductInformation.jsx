@@ -1,7 +1,7 @@
 // ProductInformation.js
 import React, { useEffect, useState } from "react";
 import { Input, Tag, Select, Button } from "antd";
-import axios from "axios";
+import axiosClient from "../axios_client";
 const { TextArea } = Input;
 const { Option } = Select;
 
@@ -68,7 +68,7 @@ function ProductInformation() {
 
   const fetchCategoriesFromServer = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/category");
+      const response = await axiosClient.get("/category");
       setCategories(response.data.data);
     } catch (error) {
       console.log(error);
@@ -77,7 +77,6 @@ function ProductInformation() {
 
   const handleCategoryChange = (selectedValues) => {
     setSelectedCategories(selectedValues);
-    console.log();
   };
 
   const tagRender = (props) => {

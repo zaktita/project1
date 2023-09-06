@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://127.0.0.1:8000';
+// const API_BASE_URL = process.env.REACT_APP_APIBASEURL;
+// export const API_BASE_URL = 'http://127.0.0.1:8000';
+export const API_BASE_URL = 'https://apiskyzoo.digitaleflame.com';
 
 // // Get the CSRF token from the meta tag
 // const csrfToken = document.querySelector('meta[name="csrf-token"]').content;

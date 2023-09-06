@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Input, Tag, Form, Select, Button, InputNumber, message } from "antd";
-import axios from "axios";
 import { useParams } from "react-router-dom";
+import axiosClient from "../axios_client";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -35,10 +35,10 @@ function UpdateProduct() {
 
   const fetchDataFromServer = async () => {
     try {
-      const response = await axios.get(
-        `http://127.0.0.1:8000/api/variations/${productId}`
+      const response = await axiosClient.get(
+        `/variations/${productId}`
       );
-      console.log(response.data);
+
       setCategories(response.data.category);
       setSizes(response.data.sizes);
       setColors(response.data.colors);
@@ -112,13 +112,11 @@ function UpdateProduct() {
 
   const handleCategoryChange = (selectedValues) => {
     setSelectedCategories(selectedValues);
-    console.log(selectedCategories);
+
   };
 
   const handleColorChange = (selectedValues) => {
     setSelectedColors(selectedValues);
-    console.log(selectedValues);
-    console.log(selectedColors);
   };
 
   const handleSizeChange = (selectedValues) => {
@@ -137,8 +135,6 @@ function UpdateProduct() {
 
     try {
       await form.validateFields();
-      console.log("form submit working");
-      console.log(productTitle);
       formData.append("_method", "PUT");
       formData.append("title", productTitle);
       formData.append("slug", productSlug);
@@ -161,12 +157,11 @@ function UpdateProduct() {
         },
       };
 
-      const response = await axios.post(
-        `http://127.0.0.1:8000/api/products/${productId}`,
+      const response = await axiosClient.post(
+        `/products/${productId}`,
         formData,
         { headers: config.headers }
       );
-      console.log(response.data);
       message.success("Product updated successfully");
       // form.resetFields(); // Clear form fields
       setIsSubmitted(true); // Set isSubmitted to true

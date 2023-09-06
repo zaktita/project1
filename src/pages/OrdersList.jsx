@@ -4,6 +4,8 @@ import { Input } from "antd";
 import { AiFillEye } from "react-icons/ai";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { useNotificationContext } from "../Contexts/NotificationContext";
+import axiosClient from "../axios_client";
 
 const { Search } = Input;
 const current = new Date();
@@ -12,14 +14,17 @@ const date = `${current.getDate()}/${
 }/${current.getFullYear()}`;
 
 function OrdersList() {
+
+
   const [Orders, setOrders] = useState([]);
   const [Status, setStatus] = useState("");
+  const { addNotification } = useNotificationContext(); // Access the addNotification function
+
   // Function to fetchOrdersFromServer categories from the server
   const fetchOrdersFromServer = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/orders");
+      const response = await axiosClient.get("/orders");
       setOrders(response.data.orders);
-      console.log(response.data.orders);
     } catch (error) {
       console.log(error);
     }
@@ -30,7 +35,6 @@ function OrdersList() {
   }, []);
 
   const updateStatus = async (id, value) => {
-    console.log(value);
     const config = {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -38,15 +42,15 @@ function OrdersList() {
       },
     };
     try {
-      const response = await axios.post(
-        `http://000000000:8000/api/orders/${id}`,
+      const response = await axiosClient.post(
+        `/orders/${id}`,
         {
           status: value,
           _method: "PUT",
         },
         { headers: config.headers }
       );
-      console.log(response.data);
+
       fetchOrdersFromServer();
     } catch (error) {
       console.log(error);
@@ -58,6 +62,7 @@ function OrdersList() {
       event.preventDefault();
       event.stopPropagation();
     };
+
     return (
       <Tag
         onMouseDown={onPreventMouseDown}
@@ -148,7 +153,7 @@ function OrdersList() {
   return (
     <div className="mt-4">
       <h3 className="mb-5 title">Orders</h3>
-      <Table columns={columns} dataSource={Orders} />
+      <Table columns={columns} dataSource={Orders} rowKey="order_id"/>
     </div>
   );
 }

@@ -1,0 +1,42 @@
+.notification-item {
+	border-radius: 5px;
+    padding: 10px;
+    width: 100%;
+
+}
+
+.notification-item span{
+display: flex;
+justify-content: space-between;
+}
+.notification-item h3{
+    font-size: 12px;
+}
+.notification-item h6{
+    font-size: 10px;
+}
+
+.notification-dropdown, .no-notification {
+    border-radius: 5px;
+    right: 0px;
+    line-height: 3;
+    width: 300px;
+    z-index: 9999;
+}
+
+.notification-dropdown {
+    border: 1px solid black;
+	height: 200px;
+	overflow: scroll;
+}
+
+.clear{
+    cursor: pointer;
+}
+
+.clear-all{
+    /* padding: 10px 0; */
+    text-align: center;
+    background-color: #d5d5d5;
+    cursor: pointer;
+}

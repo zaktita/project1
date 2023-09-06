@@ -3,7 +3,10 @@ import { Button, Space, Table, Modal, message,Tag } from "antd";
 import { Input } from "antd";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import axiosClient from "../axios_client";
+
+import {API_BASE_URL} from "../axios_client";
+
 const { Search } = Input;
 
 
@@ -50,10 +53,10 @@ function ProductList() {
     // Function to fetchProductFromServer categories from the server
     const fetchProductFromServer = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/fetchProductwhitcategories");
+        const response = await axiosClient.get("/fetchProductwhitcategories");
         setProduct(response.data.product);
         setCategories(response.data.category);
-        console.log(response.data.product);
+        // console.log(response.data.product);
       } catch (error) {
         console.log(error);
       }
@@ -67,8 +70,8 @@ function ProductList() {
         content: "Are you sure you want to delete this product?",
         onOk: async () => {
           try {
-            await axios.delete(
-              `http://127.0.0.1:8000/api/products/${product_id}`
+            await axiosClient.delete(
+              `/products/${product_id}`
             );
             message.success("product deleted successfully");
             fetchProductFromServer(); // Refresh the product list
@@ -103,7 +106,7 @@ function ProductList() {
         title: "image",
         dataIndex: "image",
         render: (text, record) => (
-          <img src={`http://localhost:8000/storage/${record.image}`} alt="" style={{ width: "50px" }} />
+          <img src={`${API_BASE_URL}/storage/${record.image}`} alt="" style={{ width: "50px" }} />
         ),
       },
       {

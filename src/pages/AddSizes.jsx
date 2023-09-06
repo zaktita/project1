@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Form, Input, Space, message, Table, Modal } from "antd";
 import axios from "axios";
 import { FaTrash } from "react-icons/fa";
+import axiosClient from "../axios_client";
 
 function AddSizes() {
   const [form] = Form.useForm();
@@ -17,7 +18,7 @@ function AddSizes() {
   // Function to fetch sizes from the server
   const fetchsizes = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/sizes");
+      const response = await axiosClient.get("/sizes");
       setsizes(response.data.size);
     } catch (error) {
     //   console.log(error);
@@ -32,7 +33,7 @@ function AddSizes() {
       content: "Are you sure you want to delete this size?",
       onOk: async () => {
         try {
-          await axios.delete(`http://127.0.0.1:8000/api/sizes/${id}`);
+          await axiosClient.delete(`/sizes/${id}`);
           message.success("size deleted successfully");
           fetchsizes(); // Refresh the size list
         } catch (error) {
@@ -83,8 +84,8 @@ function AddSizes() {
         },
       };
 
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/sizes",
+      const response = await axiosClient.post(
+        "/sizes",
         formData,
         { headers: config.headers }
       );
@@ -111,9 +112,9 @@ function AddSizes() {
         form={form}
         onFinish={handleSubmit}
         layout="horizontal"
-        className="d-flex align-items-start bg-white p-5 w-100"
+        className="d-flex align-items-start bg-white py-5 px-1 w-100"
       >
-        <div className="d-flex justify-content-between">
+        <div className="d-flex justify-content-between gap-2">
           <Input
             placeholder="Enter size"
             value={size}

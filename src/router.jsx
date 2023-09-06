@@ -25,10 +25,10 @@ const router = createBrowserRouter([
         children : [
             {
                 path:'/',
-                element:<Navigate to='/users'/>
+                element:<Navigate to='/Dashboard'/>
             },
             {
-                path:'/Users',
+                path:'/profile',
                 element:<Users/>
             },
             {
@@ -81,6 +81,10 @@ const router = createBrowserRouter([
                 path:'/coupon',
                 element:<AddCoupon/>
             },
+            {
+                path:'/*',
+                element:<Navigate to='/Dashboard'/>
+            },
         ]
     },
     {
@@ -98,7 +102,7 @@ const router = createBrowserRouter([
             },
             
             {
-                path:'*',
+                path:'/*',
                 element:<NotFound/>
             },
         ]

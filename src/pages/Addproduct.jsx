@@ -2,13 +2,14 @@
 import React, { useEffect, useState } from "react";
 import { Input, Tag, Form, Select, Button, InputNumber, message } from "antd";
 import axios from "axios";
+import axiosClient from "../axios_client";
 
 const { TextArea } = Input;
 const { Option } = Select;
 
 function AddProduct() {
   const [productTitle, setProductTitle] = useState("product title");
-  const [productSlug, setProductSlug] = useState("product-slug");
+  const [productSlug, setProductSlug] = useState('');
   const [productDescription, setProductDescription] = useState(
     "product description"
   );
@@ -22,6 +23,11 @@ function AddProduct() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
 
+  useEffect(() => {
+    const newProductSlug = productTitle ? productTitle.replace(/\s+/g, "-") : null;
+    setProductSlug(newProductSlug);
+  }, [productTitle]);
+  
   // product details
   const [colors, setColors] = useState([]);
   const [selectedColors, setSelectedColors] = useState([]);
@@ -68,7 +74,7 @@ function AddProduct() {
 
   const fetchDataFromServer = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/variations");
+      const response = await axiosClient.get("/variations");
       setCategories(response.data.category);
       setSizes(response.data.sizes);
       setColors(response.data.colors);
@@ -79,12 +85,12 @@ function AddProduct() {
 
   const handleCategoryChange = (selectedValues) => {
     setSelectedCategories(selectedValues);
-    console.log(selectedCategories);
+    // console.log(selectedCategories);
   };
 
   const handleColorChange = (selectedValues) => {
     setSelectedColors(selectedValues);
-    console.log(selectedColors);
+    // console.log(selectedColors);
   };
 
   const handleSizeChange = (selectedValues) => {
@@ -125,8 +131,8 @@ function AddProduct() {
 
     try {
       await form.validateFields();
-      console.log("form submit working");
-      console.log(productTitle);
+      // console.log("form submit working");
+      // console.log(productTitle);
 
       formData.append("title", productTitle);
       formData.append("slug", productSlug);
@@ -149,18 +155,18 @@ function AddProduct() {
         },
       };
 
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/products",
+      const response = await axiosClient.post(
+        "/products",
         formData,
         { headers: config.headers }
       );
-      console.log(response.data);
+      // console.log(response.data);
       message.success("Product created successfully");
       form.resetFields(); // Clear form fields
       setIsSubmitted(true); // Set isSubmitted to true
     } catch (error) {
       console.log(error.response.data);
-      message.error("Error creating category");
+      message.error("Error creating Product");
     }
   };
 
@@ -186,14 +192,17 @@ function AddProduct() {
                 value={productTitle}
                 name="title"
                 size="large"
-                onChange={(e) => setProductTitle(e.target.value)}
-              />
+                onChange={(e) => {
+                  const newProductTitle = e.target.value;
+                  setProductTitle(newProductTitle);
+                  // setProductSlug(newProductTitle.replace(/\s+/g, "-"));
+                }}              />
               <label htmlFor="slug" className="fw-bold">
                 Product slug
               </label>
               <Input
                 placeholder="Product slug"
-                value={productSlug}
+                value={productSlug || ''}
                 name="slug"
                 size="large"
                 onChange={(e) => setProductSlug(e.target.value)}

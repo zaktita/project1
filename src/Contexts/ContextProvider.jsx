@@ -33,10 +33,12 @@ export function ContextProvider({ children }) {
     }
   };
 
-  useEffect(() => {
-    console.log(user.user);
-  }, [user]);
+  // useEffect(() => {
+  //   console.log(user.user);
+  // }, [user]);
 
+
+  
   // Return the context provider with the state values and setter functions as context value
   return (
     <StateContext.Provider

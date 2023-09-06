@@ -12,6 +12,7 @@ import {
 } from "antd";
 import axios from "axios";
 import { FaTrash } from "react-icons/fa";
+import axiosClient from "../axios_client";
 
 function AddCoupon() {
   const [form] = Form.useForm();
@@ -29,9 +30,9 @@ function AddCoupon() {
   // Function to fetch coupons from the server
   const fetchCoupons = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/coupon");
+      const response = await axiosClient.get("/coupon");
       setCoupons(response.data);
-      console.log(response.data);
+      // console.log(response.data);
     } catch (error) {
       console.log(error);
     }
@@ -56,7 +57,7 @@ function AddCoupon() {
       content: "Are you sure you want to delete this coupon?",
       onOk: async () => {
         try {
-          await axios.delete(`http://127.0.0.1:8000/api/coupon/${id}`);
+          await axiosClient.delete(`/coupon/${id}`);
           message.success("Coupon deleted successfully");
           fetchCoupons(); // Refresh the coupon list
         } catch (error) {
@@ -133,11 +134,11 @@ function AddCoupon() {
         expires_at: expiresAt,
       };
 
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/coupon",
+      const response = await axiosClient.post(
+        "coupon",
         formData
       );
-      console.log(response.data);
+      // console.log(response.data);
       message.success("Coupon created successfully");
       form.resetFields(); // Clear form fields
       setIsSubmitted(true); // Set isSubmitted to true
@@ -146,7 +147,7 @@ function AddCoupon() {
       fetchCoupons(); // Refresh the coupon list
     } catch (error) {
       if (error.response) {
-        console.log(error.response.data);
+        // console.log(error.response.data);
         message.error("Error creating coupon");
       } else {
         console.log(error.message);
@@ -161,9 +162,9 @@ function AddCoupon() {
         form={form}
         onFinish={handleSubmit}
         layout="horizontal"
-        className="d-flex align-items-start bg-white p-5 w-100"
+        className="d-flex align-items-start bg-white py-5 w-100"
       >
-        <div className="d-flex justify-content-between">
+        <div className="d-flex justify-content-between gap-2">
           <Input
             placeholder="Enter coupon code"
             value={coupon}

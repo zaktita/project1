@@ -3,7 +3,8 @@ import { Button, Space, Table, Modal, message } from "antd";
 import { Input } from "antd";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import axiosClient from "../axios_client";
+
 
 const { Search } = Input;
 
@@ -19,7 +20,7 @@ function CategoryList() {
   // Function to fetch categories from the server
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/category");
+      const response = await axiosClient.get("/category");
       setCategories(response.data.data);
     } catch (error) {
       console.log(error);
@@ -34,8 +35,8 @@ function CategoryList() {
       content: "Are you sure you want to delete this category?",
       onOk: async () => {
         try {
-          await axios.delete(
-            `http://127.0.0.1:8000/api/category/${category_id}`
+          await axiosClient.delete(
+            `/category/${category_id}`
           );
           message.success("Category deleted successfully");
           fetchCategories(); // Refresh the category list

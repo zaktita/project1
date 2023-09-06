@@ -1,9 +1,9 @@
 import React from "react";
-import axios from "axios";
+
 import { Button, Form, Input, message } from "antd";
 import { useState } from "react";
+import axiosClient from "../axios_client";
 
-import { SmileOutlined } from '@ant-design/icons';
 const { TextArea } = Input;
 
 function NewCategory() {
@@ -15,8 +15,8 @@ function NewCategory() {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleImageUpload = (event) => {
-    console.log(event.target.files[0]);
-    console.log('image uploaded');
+    // console.log(event.target.files[0]);
+    // console.log('image uploaded');
     setCategoryImage(event.target.files[0]);
   };
 
@@ -25,7 +25,7 @@ function NewCategory() {
   const handleSubmit = async () => {
     try {
       await form.validateFields();
-      console.log('form submit working');
+      // console.log('form submit working');
 
       const formData = new FormData();
       formData.append("category_name", categoryName);
@@ -40,8 +40,8 @@ function NewCategory() {
         },
       };
 
-      const response = await axios.post("http://127.0.0.1:8000/api/category", formData, { headers: config.headers });
-      console.log(response.data);
+      const response = await axiosClient.post("/category", formData, { headers: config.headers });
+      // console.log(response.data);
       message.success('Category created successfully');
       form.resetFields(); // Clear form fields
       setIsSubmitted(true); // Set isSubmitted to true

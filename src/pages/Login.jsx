@@ -8,11 +8,11 @@ import img from "../images/bg_img.webp";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Form, message, Input } from "antd";
 function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("testing@test.com");
+  const [password, setPassword] = useState("Test123@");
   const [errors, setErrors] = useState();
 
-  const {setTokenFunction } = useStateContext();
+  const { setTokenFunction } = useStateContext();
   const navigate = useNavigate();
 
   function handleSubmit(e) {
@@ -65,16 +65,17 @@ function Login() {
         name="normal_login"
         className="login-form"
         initialValues={{
+          email: "testing@test.com",
+          password: "Test123@",
           remember: true,
         }}
         style={{
           padding: "50px 30px",
-          backgroundColor: "rgba(255, 255, 255, 0.3)",
           borderRadius: "10px",
           backdropFilter: "blur(10px)",
+          backgroundColor: "rgba(255, 255, 255, 0.3)",
           border: "1px solid rgba(255, 255, 255)",
-          boxShadow: '0px 0px 40px 5px rgba(255, 255, 255)',
-
+          boxShadow: "0px 0px 40px 5px rgba(255, 255, 255)",
         }}
       >
         <h2 style={{ textAlign: "center", marginBottom: "2rem" }}>Login</h2>
@@ -108,8 +109,8 @@ function Login() {
           <Input
             prefix={<LockOutlined className="site-form-item-icon" />}
             type="password"
-            placeholder="Password"
             value={password}
+            placeholder="Password"
             onChange={(event) => setPassword(event.target.value)}
           />
         </Form.Item>

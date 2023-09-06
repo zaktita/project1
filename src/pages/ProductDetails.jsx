@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { InputNumber, Select , Tag, message  } from "antd";
 import axios from "axios";
+import axiosClient from "../axios_client";
 
 const { Option } = Select;
 
@@ -21,7 +22,7 @@ function ProductDetails() {
 
   const fetchColorsFromServer = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/colors");
+      const response = await axiosClient.get("/colors");
       setColors(response.data.data);
 
       const colorOptions = response.data.data.map((e) => {
@@ -37,7 +38,7 @@ function ProductDetails() {
 
   const fetchSizesFromServer = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/sizes");
+      const response = await axiosClient.get("/sizes");
       setSizes(response.data.size);
 
       const sizeOptions = response.data.size.map((e) => {

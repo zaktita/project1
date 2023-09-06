@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Form, Input, Space, message, Table, Modal } from "antd";
 import axios from "axios";
 import { FaTrash } from "react-icons/fa";
+import axiosClient from "../axios_client";
 
 function AddColor() {
   const [form] = Form.useForm();
@@ -17,9 +18,8 @@ function AddColor() {
   // Function to fetch categories from the server
   const fetchColors = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/colors");
+      const response = await axiosClient.get("/colors");
       setColors(response.data.data);
-      console.log(response.data.data.colors);
     } catch (error) {
       console.log(error);
     }
@@ -33,7 +33,7 @@ function AddColor() {
       content: "Are you sure you want to delete this color?",
       onOk: async () => {
         try {
-          await axios.delete(`http://127.0.0.1:8000/api/colors/${id}`);
+          await axiosClient.delete(`/colors/${id}`);
           message.success("Color deleted successfully");
           fetchColors(); // Refresh the color list
         } catch (error) {
@@ -76,11 +76,9 @@ function AddColor() {
   const handleSubmit = async () => {
     try {
       await form.validateFields();
-      console.log("form submit working");
 
       const formData = new FormData();
       formData.append("color_name", color);
-      console.log(formData);
       // typeof formData;
       const config = {
         headers: {
@@ -89,12 +87,12 @@ function AddColor() {
         },
       };
 
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/colors",
+      const response = await axiosClient.post(
+        "/colors",
         formData,
         { headers: config.headers }
       );
-      console.log(response.data);
+      // console.log(response.data);
       message.success("color created successfully");
       form.resetFields(); // Clear form fields
       setIsSubmitted(true); // Set isSubmitted to true
@@ -117,9 +115,9 @@ function AddColor() {
         form={form}
         onFinish={handleSubmit}
         layout="horizontal"
-        className="d-flex align-items-start bg-white p-5 w-100"
+        className="d-flex align-items-start bg-white py-5 px-1  w-100"
       >
-        <div className="d-flex justify-content-between">
+        <div className="d-flex justify-content-between gap-2">
           <Input
             placeholder="Enter color"
             value={color}

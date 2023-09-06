@@ -4,7 +4,7 @@ import { useStateContext } from "../Contexts/ContextProvider";
 // import './default.css'
 import Dropdown from "react-bootstrap/Dropdown";
 
-import { Breadcrumb, Layout, Menu, theme } from "antd";
+import { Badge, Breadcrumb, Layout, Menu, theme } from "antd";
 import {
   BellOutlined,
   PieChartOutlined,
@@ -19,6 +19,8 @@ import {
 } from "@ant-design/icons";
 import logo from "../images/logo.webp";
 import axiosClient from "../axios_client";
+import Notification from "../pages/Notification";
+import { useNotificationContext } from "../Contexts/NotificationContext";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -33,7 +35,6 @@ function getItem(label, key, icon, children) {
 
 const items = [
   getItem("Overview", "Dashboard", <PieChartOutlined />),
-  getItem("user", "Users", <PieChartOutlined />),
   getItem("Product", "Product", <ShoppingCartOutlined />, [
     getItem("Product list", "ProductList", <CaretDownOutlined />),
     getItem("Add Product ", "Addproduct", <PlusOutlined />),
@@ -49,10 +50,19 @@ const items = [
 ];
 
 function DefaultLayout() {
+  const {
+    notifications,
+    fetchNotification,
+    removeNotification,
+    clearAllNotifications,
+  } = useNotificationContext();
+
   const navigate = useNavigate();
 
   const { user, token, setUser, setTokenFunction } = useStateContext();
   const [collapsed, setCollapsed] = useState(false);
+
+  const [showNotifications, setShowNotifications] = useState(false);
 
   useEffect(() => {
     if (!token) {
@@ -60,17 +70,12 @@ function DefaultLayout() {
     }
   }, [token]);
 
-  // useEffect(() => {
-  //   console.log('user context',user);
-  //   localStorage.setItem("user", user);
-  // });
-
   const {
     token: { colorBgContainer },
   } = theme.useToken();
 
   const logout = async () => {
-    console.log(token);
+    // console.log(token);
     try {
       const response = await axiosClient.post("/logout", null, {
         headers: {
@@ -84,6 +89,10 @@ function DefaultLayout() {
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const toggleNotification = () => {
+    setShowNotifications(!showNotifications);
   };
 
   return (
@@ -122,10 +131,39 @@ function DefaultLayout() {
         >
           <div className="d-flex gap-4 align-items-center justify-content-end px-2 shadow-sm">
             <div className="position-relative">
-              <BellOutlined className="fs-4" />
-              <span className="badge bg-primary rounded-circle p-1 position-absolute">
-                3
+              <span className="position-relative">
+                <BellOutlined className="fs-4 " onClick={toggleNotification} />
+                <span className="badge bg-primary rounded-circle p-1 position-absolute">
+                  {notifications.length}
+                </span>
               </span>
+
+              {showNotifications && (
+                <div className="notification-dropdown position-absolute">
+                  {notifications.length > 0 ? (
+                    <>
+                      {notifications.map((notification, index) => (
+                        <Notification
+                          key={index}
+                          index={index}
+                          order={notification}
+                          onClose={() => removeNotification(index, notification.id)}
+                        />
+                      ))}
+                      <div
+                        className="clear-all"
+                        onClick={clearAllNotifications}
+                      >
+                        Clear All
+                      </div>
+                    </>
+                  ) : 
+                  <div className="no-notification">
+                    No notification
+                  </div>
+                  }
+                </div>
+              )}
             </div>
 
             <div className="d-flex gap-3 align-items-center dropdown">
@@ -133,7 +171,7 @@ function DefaultLayout() {
                 <img
                   width={32}
                   height={32}
-                  src="https://stroyka-admin.html.themeforest.scompiler.ru/variants/ltr/images/customers/customer-4-64x64.jpg"
+                  src={user.image}
                   alt=""
                 />
               </div>
@@ -143,8 +181,8 @@ function DefaultLayout() {
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                <h5 className="mb-0">{user.name}</h5> 
-                 <p className="mb-0">{user.email}</p>
+                <h5 className="mb-0">{user.name}</h5>
+                <p className="mb-0">{user.email}</p>
               </div>
 
               <Dropdown>
@@ -156,6 +194,7 @@ function DefaultLayout() {
                   <Dropdown.Item
                     className="dropdown-item py-1 mb-1"
                     style={{ height: "auto", lineHeight: "20px" }}
+                    onClick={() => navigate("/profile")}
                   >
                     {/* View Profile content */}
                     View Profile
